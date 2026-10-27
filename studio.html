@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d14">
+<title>Amusing Studio: AI Video Editor by Md Taufiqur Rahman</title>
+<meta name="author" content="Md Taufiqur Rahman">
+<meta name="description" content="Amusing Studio by Md Taufiqur Rahman: describe a video, add a voiceover, and edit it scene by scene with cinematic and SaaS motion graphics. Runs in your browser.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="studio.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="app" id="app">
+  <aside class="side glass" id="side" aria-label="Menu">
+    <div class="brand"><div class="logo">A</div><div class="bname"><b>Amusing Studio</b><small>by Md Taufiqur Rahman</small></div></div>
+    <nav class="seg" aria-label="Sections"><a href="index.html">Chat</a><a class="on" href="studio.html">Studio</a></nav>
+    <button class="btn primary wide" id="newProject">+ New video</button>
+    <div class="list-title">Your videos</div>
+    <nav class="chatlist" id="projList"></nav>
+    <div class="side-foot">
+      <button class="btn ghost wide" id="tasteBtn">My taste &amp; rules</button>
+      <button class="btn ghost wide" id="openProjFile">Open a project file</button>
+      <button class="btn ghost wide" id="settingsBtn">Settings</button>
+      <div class="credit">Amusing Studio &middot; made by Md Taufiqur Rahman &middot; open source (MIT)</div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="top glass">
+      <button class="icon" id="menuBtn" aria-label="Open menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <input class="pname" id="pname" value="" placeholder="Name your video" aria-label="Video name" maxlength="60">
+      <div class="seg modes" role="tablist" aria-label="Mode"><button class="on" id="modeSimple" role="tab">Simple</button><button id="modeAdv" role="tab">Advanced</button></div>
+      <select id="aspect" class="mini" aria-label="Shape"><option value="16:9">16:9 wide</option><option value="9:16">9:16 tall</option><option value="1:1">1:1 square</option></select>
+      <button class="guide-fab" id="guideFab" aria-label="Open the guide" title="Your guide"><span>?</span></button>
+      <button class="btn primary" id="exportBtn" disabled>Export</button>
+    </header>
+
+    <div class="studio" id="studio" data-mode="simple">
+      <section class="preview glass" id="previewCard">
+        <div class="cv-wrap" id="cvWrap"><canvas id="cv" width="1280" height="720" aria-label="Video preview"></canvas><canvas id="pen" aria-hidden="true"></canvas>
+          <div class="pen-pop glass" id="penPop" hidden>
+            <div class="small" id="penTarget">Marked area</div>
+            <div class="row-inline"><input id="penNote" placeholder="What should change here? e.g. make it red, change to &quot;Hello&quot;" aria-label="What should change here"><button class="icon sm" id="penMic" aria-label="Speak instead" title="Speak instead" hidden>&#127908;</button></div>
+            <div class="btn-row tight"><button class="btn primary sm" id="penApply">Apply</button><button class="btn soft sm" id="penCancel">Cancel</button></div>
+          </div>
+          <div class="cv-empty" id="cvEmpty"><div class="logo" style="width:64px;height:64px;margin:0 auto 12px">A</div><b>Your video shows up here</b><span>Describe it on the right, then press Make my video.</span></div></div>
+        <div class="transport">
+          <button class="icon" id="playBtn" aria-label="Play" disabled><svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+          <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Position" disabled>
+          <span class="time" id="timeText">0:00 / 0:00</span>
+          <button class="icon" id="penBtn" aria-label="Pen: mark what to change" title="Pen: mark what to change" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+          <button class="icon" id="undoBtn" aria-label="Undo" title="Undo (Ctrl+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+          <button class="icon" id="redoBtn" aria-label="Redo" title="Redo (Ctrl+Shift+Z)" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+        </div>
+      </section>
+
+      <section class="panel glass" id="simplePanel" aria-label="Make a video">
+        <h3>What video do you want?</h3>
+        <div class="field"><label for="prompt">Describe it</label>
+          <textarea id="prompt" placeholder="A promo for my app Flowly that saves teams 5 hours a week. Features: boards, time tracking, chat. Works with Slack and Notion."></textarea></div>
+        <div class="chips left" id="examples"></div>
+        <div class="field"><label for="look">Look <i>Optional</i></label>
+          <select id="look"></select></div>
+        <div class="row2 attach">
+          <div><button class="btn soft wide" id="attachAudio">Add voiceover</button><div class="hint" id="audioNote">Optional. I match the scene lengths to your voice.</div></div>
+          <div><button class="btn soft wide" id="attachRef">Add a reference</button><div class="hint" id="refNote">Optional. A picture or video whose look and pace you like.</div></div>
+        </div>
+        <div class="btn-row"><button class="btn primary" id="makeBtn">Make my video</button><button class="btn link" id="toAdv" hidden>Edit scene by scene</button></div>
+        <div class="hint" id="makeNote"></div>
+      </section>
+
+      <section class="panel glass" id="scenePanel" aria-label="Scene editor" hidden>
+        <div class="sp-head"><b id="spTitle">Scene</b><span class="sp-nav"><button class="icon sm" id="spPrev" aria-label="Previous scene">&lsaquo;</button><button class="icon sm" id="spNext" aria-label="Next scene">&rsaquo;</button></span></div>
+        <div class="field"><label for="instr">Tell this scene what to do</label>
+          <textarea id="instr" placeholder="e.g. kinetic text, neon mood, 3 seconds, add Stripe and Notion logos"></textarea></div>
+        <div class="understood" id="understood"></div>
+        <details class="fold" open><summary>Text</summary>
+          <div class="field" data-f="text"><label for="fText">Headline</label><input id="fText" maxlength="160"></div>
+          <div class="field" data-f="sub"><label for="fSub">Subtext</label><input id="fSub" maxlength="160"></div>
+          <div class="field" data-f="items"><label for="fItems">Items <i>one per line</i></label><textarea id="fItems" style="min-height:70px"></textarea></div>
+          <div class="field" data-f="stat"><label>Number</label><div class="row3"><input id="fStatV" type="number" step="any" placeholder="50" aria-label="Value"><input id="fStatS" maxlength="4" placeholder="%" aria-label="Unit"><input id="fStatL" maxlength="40" placeholder="faster" aria-label="Label"></div></div>
+        </details>
+        <details class="fold" open><summary>Look and timing</summary>
+          <div class="field"><label for="fType">Style</label><select id="fType"></select><div class="hint" id="typeHint"></div></div>
+          <div class="row2"><div class="field"><label for="fMood">Mood</label><select id="fMood"></select></div><div class="field"><label for="fTrans">Transition in</label><select id="fTrans"></select></div></div>
+          <button class="btn soft sm" id="moodAll" style="margin-top:8px">Use this mood for the whole video</button>
+          <div class="field"><label for="fDur">Length <b id="durText"></b></label><input type="range" id="fDur" min="1.2" max="15" step="0.1"></div>
+        </details>
+        <details class="fold" open id="elemBox"><summary>Logos and photos</summary>
+          <div id="elemList"></div>
+          <div class="btn-row tight"><button class="btn soft" id="addLogo">Upload logo</button><button class="btn soft" id="addPhoto">Upload photo</button></div>
+          <div class="field"><label for="photoQ">Find a free photo</label><div class="row-inline"><input id="photoQ" placeholder="rainy city street at night"><button class="btn soft" id="photoGo">Search</button></div><div class="hint" id="photoNote"></div></div>
+          <div class="cands" id="cands"></div>
+        </details>
+        <details class="fold" id="adjBox" hidden><summary id="adjTitle">Photo tools</summary>
+          <div class="field"><label for="adjFilter">Look</label><select id="adjFilter"></select></div>
+          <div data-adj="photo">
+            <div class="field"><label for="adjBright">Brightness <b id="adjBrightT"></b></label><input type="range" id="adjBright" min="-60" max="60" step="1"></div>
+            <div class="field"><label for="adjContrast">Contrast <b id="adjContrastT"></b></label><input type="range" id="adjContrast" min="-60" max="60" step="1"></div>
+            <div class="field"><label for="adjSat">Colour <b id="adjSatT"></b></label><input type="range" id="adjSat" min="-100" max="100" step="1"></div>
+            <div class="field"><label for="adjWarm">Warmth <b id="adjWarmT"></b></label><input type="range" id="adjWarm" min="-60" max="60" step="1"></div>
+          </div>
+          <div class="field"><label for="adjFx">Move picture left / right</label><input type="range" id="adjFx" min="-1" max="1" step="0.05"></div>
+          <div class="field"><label for="adjFy">Move picture up / down</label><input type="range" id="adjFy" min="-1" max="1" step="0.05"></div>
+          <div class="field"><label for="adjZoom">Zoom <b id="adjZoomT"></b></label><input type="range" id="adjZoom" min="1" max="2.5" step="0.05"></div>
+          <div data-adj="video">
+            <div class="row2"><div class="field"><label for="vidIn">Start at (s)</label><input id="vidIn" type="number" min="0" step="0.1"></div><div class="field"><label for="vidOut">End at (s)</label><input id="vidOut" type="number" min="0" step="0.1"></div></div>
+            <div class="field"><label for="vidVol">Clip sound <b id="vidVolT"></b></label><input type="range" id="vidVol" min="0" max="1" step="0.05"></div>
+          </div>
+          <div class="btn-row tight"><button class="btn soft sm" id="adjReset">Reset</button></div>
+        </details>
+        <div class="btn-row tight">
+          <button class="btn soft" id="spLeft" title="Move earlier">&larr;</button><button class="btn soft" id="spRight" title="Move later">&rarr;</button>
+          <button class="btn soft" id="spDup">Duplicate</button><button class="btn soft danger" id="spDel">Delete</button>
+        </div>
+      </section>
+
+      <section class="timeline glass" id="timeline" aria-label="Timeline">
+        <div class="tl-bar">
+          <b>Timeline</b>
+          <span class="tl-tools">
+            <select id="addType" class="mini" aria-label="Add scene"><option value="">+ Add scene</option></select>
+            <button class="btn soft sm" id="voiceBtn">Voiceover</button>
+            <button class="btn soft sm" id="splitBtn" hidden>Fit scenes to my voice</button>
+            <button class="icon sm" id="zoomOut" aria-label="Zoom out">&minus;</button><button class="icon sm" id="zoomIn" aria-label="Zoom in">+</button>
+          </span>
+        </div>
+        <div class="tl-scroll" id="tlScroll"><div class="tl-inner" id="tlInner">
+          <div class="ruler" id="ruler"></div>
+          <div class="lanes" id="lanes"></div>
+          <canvas class="wave" id="wave" height="54" hidden></canvas>
+          <div class="playhead" id="playhead"></div>
+        </div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Guide bot -->
+<div class="spot" id="spot" hidden></div>
+<div class="guide" id="guide">
+    <div class="guide-card glass" id="guideCard" hidden>
+    <div class="guide-head"><div class="guide-av">A</div><div><b>Studio guide</b><small id="guideStep"></small></div><button class="icon sm" id="guideClose" aria-label="Close guide">&times;</button></div>
+    <div class="guide-msg" id="guideMsg"></div>
+    <div class="btn-row tight" id="guideBtns"></div>
+    <form class="guide-ask" id="guideAsk"><input id="guideQ" placeholder="Ask me how to do something" autocomplete="off" aria-label="Ask the guide"><button class="btn soft sm" type="submit">Ask</button></form>
+  </div>
+</div>
+
+<!-- Export -->
+<dialog id="exportDlg"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Export your video</h3>
+  <div class="small">It records the video in real time on your device, so a 30 second video takes about 30 seconds. Keep this tab open and visible while it works.</div>
+  <div class="field"><label for="expQ">Quality</label><select id="expQ"><option value="720">HD 720p (faster)</option><option value="1080">Full HD 1080p</option></select></div>
+  <div class="btn-row"><button class="btn primary" id="expGo">Start</button><button class="btn soft" id="expStop" hidden>Stop</button></div>
+  <div class="progress thin" id="expBar" hidden><i id="expFill"></i></div>
+  <div class="small" id="expStatus"></div>
+  <div id="expOut"></div>
+  <div class="btn-row" id="expActions" hidden><a class="btn primary" id="expDl" style="text-decoration:none">Download video</a><a class="btn soft" id="expCredits" style="text-decoration:none;color:inherit" hidden>Download credits</a></div>
+</div></dialog>
+
+<!-- Voiceover -->
+<dialog id="voiceDlg"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Voiceover</h3>
+  <div class="small" id="vInfo">No voiceover yet.</div>
+  <canvas id="vWave" height="90" class="vwave"></canvas>
+  <div class="btn-row tight"><button class="btn soft" id="vAdd">Add or replace file</button><button class="btn soft" id="vRec">Record</button><button class="btn soft" id="vPlay" disabled>Listen</button></div>
+  <div class="hint" id="vRecNote"></div>
+  <div class="row2" style="margin-top:12px"><div class="field"><label for="vStart">Cut off the start (s)</label><input id="vStart" type="number" min="0" step="0.1" value="0"></div><div class="field"><label for="vEnd">Cut off the end (s)</label><input id="vEnd" type="number" min="0" step="0.1" value="0"></div></div>
+  <div class="btn-row tight"><button class="btn soft" id="vTrim">Trim</button><button class="btn soft" id="vTight">Shorten long pauses</button></div>
+  <div class="field"><label for="vVol">Volume <b id="vVolT"></b></label><input type="range" id="vVol" min="0" max="2" step="0.05" value="1"></div>
+  <div class="btn-row"><button class="btn soft" id="vUndo" disabled>Undo voice edit</button><button class="btn primary" id="vDone">Done</button></div>
+  <div class="hint">Editing keeps the original untouched until you press Done. Scenes can be re-fitted to the new length with "Fit scenes to my voice".</div>
+</div></dialog>
+
+<!-- Taste -->
+<dialog id="tasteDlg"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>My taste and rules</h3>
+  <div class="small">This is how your videos get edited. Lines like <code>pace: fast</code> are applied by the Studio every time. Lines starting with a dash are notes for the AI helper (if you turn it on).</div>
+  <div class="field"><label for="teachIn">Teach it a rule</label><div class="row-inline"><input id="teachIn" placeholder="always use slide transitions and a fast pace"><button class="btn soft" id="teachGo">Add</button></div></div>
+  <div class="field"><label for="tasteText">Taste file</label><textarea id="tasteText" class="mono" spellcheck="false" style="min-height:300px"></textarea><div class="hint err" id="tasteWarn"></div></div>
+  <div class="btn-row"><button class="btn primary" id="tasteSave">Save</button><button class="btn soft" id="tasteReset">Reset to default</button></div>
+</div></dialog>
+
+<!-- Settings -->
+<dialog id="setDlg"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Studio settings</h3>
+  <div class="sec"><b>AI helper (optional)</b>
+    <label class="switch"><div><b>Let the AI write storyboards</b><span>Uses the same free in-browser model as Chat (about 1 GB once, then cached). Without it the Studio still works with its own rules.</span></div><input type="checkbox" id="setAi"></label>
+    <div class="hint" id="aiStatus"></div>
+  </div>
+  <div class="sec"><b>Free stock photos</b>
+    <div class="hint">Wikimedia Commons and Openverse work with no key. Add a free key for more variety.</div>
+    <div class="field"><label for="keyPexels">Pexels key <i>Optional</i></label><input id="keyPexels" autocomplete="off" placeholder="from pexels.com/api"></div>
+    <div class="field"><label for="keyPixabay">Pixabay key <i>Optional</i></label><input id="keyPixabay" autocomplete="off" placeholder="from pixabay.com/api/docs"></div>
+    <div class="hint">Keys stay in this browser. Photos are saved inside your project and credits are listed on export.</div>
+  </div>
+  <div class="sec"><b>Your data</b>
+    <div class="row2"><button class="btn soft" id="saveFile">Save this video as a file</button><button class="btn soft danger" id="delAll">Delete all videos</button></div>
+  </div>
+</div></dialog>
+
+<input type="file" id="videoFile" accept="video/*" hidden>
+<input type="file" id="audioFile" accept="audio/*,video/mp4,video/webm" hidden>
+<input type="file" id="refFile" accept="image/*,video/*" hidden>
+<input type="file" id="logoFile" accept="image/*" hidden>
+<input type="file" id="photoFile" accept="image/*" hidden>
+<input type="file" id="projFile" accept=".json,application/json" hidden>
+<div id="toast" class="glass" role="status"></div>
+
+<script type="module" src="studio.js"></script>
+</body>
+</html>

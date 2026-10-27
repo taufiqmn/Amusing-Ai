@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d14">
+<title>Amusing AI: Free Private Chat by Md Taufiqur Rahman</title>
+<meta name="author" content="Md Taufiqur Rahman">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<meta name="description" content="Amusing AI by Md Taufiqur Rahman: a free private AI chat that runs on your own device, plus Amusing Studio for editing videos. No account, no key, no bill.">
+<link rel="preconnect" href="https://huggingface.co" crossorigin>
+<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<div class="app" id="app">
+  <aside class="side glass" id="side" aria-label="Menu">
+    <div class="brand"><div class="logo">A</div><div class="bname"><b>Amusing AI</b><small>by Md Taufiqur Rahman</small></div></div>
+    <nav class="seg" aria-label="Sections"><a class="on" href="index.html">Chat</a><a href="studio.html">Studio</a></nav>
+    <button class="btn primary wide" id="newChat">+ New chat</button>
+    <div class="tools">
+      <button class="tool" id="openModels" title="Choose an AI model">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg>Models
+      </button>
+      <button class="tool" id="openChart" title="Make a chart from numbers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Chart
+      </button>
+      <button class="tool" id="openCreate" title="Create an image or video" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Create
+      </button>
+    </div>
+    <div class="list-title">Recent chats</div>
+    <nav class="chatlist" id="chatList"></nav>
+    <div class="side-foot">
+      <button class="btn ghost wide" id="openFile">Open a saved chat</button>
+      <button class="btn ghost wide" id="openSettings">Settings</button>
+      <button class="btn ghost wide" id="openDev">For developers</button>
+      <div class="credit">Amusing AI &middot; made by Md Taufiqur Rahman &middot; open source (MIT)</div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <header class="top glass">
+      <button class="icon" id="menuBtn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="ttl" id="title">New chat</div>
+      <span class="pill" id="pill"><i></i><span id="pillText">Not started</span></span>
+      <button class="icon" id="saveBtn" aria-label="Save this chat to a file" title="Save this chat to a file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>
+      </button>
+    </header>
+
+    <section class="stage glass" id="stage">
+      <div class="log" id="log" aria-live="polite"></div>
+      <div class="hero" id="hero"><div class="hero-card" id="heroCard"></div></div>
+    </section>
+
+    <footer class="composer glass">
+      <div class="attach-row" id="attachRow" hidden></div>
+      <div class="composer-row">
+        <button class="icon" id="attachBtn" aria-label="Add a picture" title="Add a picture to ask about">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5l-8.6 8.6a5.5 5.5 0 0 1-7.8-7.8l9-9a3.7 3.7 0 0 1 5.2 5.2l-9 9a1.8 1.8 0 0 1-2.6-2.6l8.3-8.3"/></svg>
+        </button>
+        <textarea id="input" rows="1" placeholder="Start the AI to begin chatting" disabled aria-label="Message"></textarea>
+        <button class="send" id="send" aria-label="Send" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>
+        </button>
+        <button class="send stop" id="stop" aria-label="Stop" style="display:none">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+        </button>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<!-- Settings -->
+<dialog id="settings"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Settings</h3>
+  <div class="small">Everything stays on your device.</div>
+
+  <div class="sec"><b>About you</b>
+    <div class="field"><label for="aboutName">Name <i>Optional</i></label><input id="aboutName" autocomplete="given-name" placeholder="What should I call you?"></div>
+    <div class="field"><label for="aboutEmail">Email <i>Optional</i></label><input id="aboutEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label for="aboutJob">What you do <i>Optional</i></label><input id="aboutJob" placeholder="Student, developer, teacher..."></div>
+    <div class="hint" style="margin-top:8px">Saved only in this browser. Used to make answers fit you.</div>
+  </div>
+
+  <div class="sec"><b>AI model</b>
+    <button class="btn soft wide" id="chooseModel">Choose a model...</button>
+  </div>
+
+  <div class="sec"><b>Answer length</b><div class="opts" id="lengthOpts"></div></div>
+  <div class="sec"><b>Style</b><div class="opts" id="styleOpts"></div></div>
+
+  <div class="sec"><b>Extras (off by default)</b>
+    <label class="switch"><div><b>Image creation</b><span>Make pictures with the ComfyUI on your own computer</span></div><input type="checkbox" id="genImg"></label>
+    <label class="switch"><div><b>Video creation</b><span>Make short clips with ComfyUI. Needs a strong GPU</span></div><input type="checkbox" id="genVid"></label>
+    <div id="comfySetup" hidden>
+      <div class="hint" style="margin-top:12px">Start ComfyUI with <code>--enable-cors-header "*"</code> so this page can talk to it. Nothing is sent to us.</div>
+      <div class="field"><label for="comfyUrl">ComfyUI address</label>
+        <div class="row-inline"><input id="comfyUrl" placeholder="http://127.0.0.1:8188"><button class="btn soft" id="comfyTest">Test</button></div>
+        <div class="hint" id="comfyStatus"></div></div>
+      <div class="field" id="wfImageF"><label for="wfImage">Image workflow <i>API format</i></label>
+        <textarea id="wfImage" class="mono" spellcheck="false" placeholder='Paste the JSON from ComfyUI "Save (API Format)". Put {{prompt}} where the prompt text goes.'></textarea></div>
+      <div class="field" id="wfVideoF"><label for="wfVideo">Video workflow <i>API format</i></label>
+        <textarea id="wfVideo" class="mono" spellcheck="false" placeholder='Same idea, for a video workflow (Wan, LTX...).'></textarea></div>
+    </div>
+  </div>
+
+  <div class="sec"><b>Your data</b>
+    <div class="row2">
+      <button class="btn soft" id="exportAll">Save all chats</button>
+      <button class="btn soft" id="importBtn">Open saved chats</button>
+      <button class="btn soft danger" id="delChats">Delete all chats</button>
+      <button class="btn soft danger" id="clearProfile">Forget my details</button>
+      <button class="btn soft danger" id="delModel">Remove downloaded AI</button>
+    </div>
+  </div>
+</div></dialog>
+
+<!-- Models -->
+<dialog id="models"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Choose an AI model</h3>
+  <div class="small">Free open-source models. They run on your device, so bigger ones need a stronger GPU and a bigger first download. Models you used before open instantly.</div>
+  <div id="modelList"></div>
+</div></dialog>
+
+<!-- Chart -->
+<dialog id="chart"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Make a chart</h3>
+  <div class="small">Paste or type your numbers. No AI needed.</div>
+  <div class="field"><label for="chartTitle">Title <i>Optional</i></label><input id="chartTitle" placeholder="Monthly sales"></div>
+  <div class="field"><label for="chartType">Type</label>
+    <select id="chartType"><option value="bar">Bars</option><option value="line">Line</option><option value="donut">Donut (parts of a whole)</option></select></div>
+  <div class="field"><label for="chartData">Data</label>
+    <textarea id="chartData" class="mono" spellcheck="false" placeholder="One row per line: label, number&#10;Jan, 1200&#10;Feb, 1850&#10;Mar, 900&#10;&#10;Several columns work too: add a first row with names, like  Month, Sales, Cost"></textarea>
+    <div class="hint">Tip: use plain numbers (1500, not 1,500) when separating with commas. Pasting from a spreadsheet works as is.</div></div>
+  <div class="hint err" id="chartErr" style="min-height:18px;margin-top:8px"></div>
+  <div id="chartPreview"></div>
+  <div class="btn-row"><button class="btn soft" id="chartPng" disabled>Save as picture</button><button class="btn primary" id="chartAdd" disabled>Add to chat</button></div>
+</div></dialog>
+
+<!-- Create -->
+<dialog id="create"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>Create an image or video</h3>
+  <div class="small">Made by the ComfyUI on your own computer, so it is free and private.</div>
+  <div class="tabs"><button class="tab on" id="tabImage">Image</button><button class="tab" id="tabVideo">Video</button></div>
+  <div class="field"><label for="createPrompt">Describe it</label>
+    <textarea id="createPrompt" placeholder="A cozy cabin in the snow at night, warm lights, cinematic"></textarea></div>
+  <div class="hint" id="createNote" style="margin-top:8px"></div>
+  <div class="btn-row"><button class="btn primary" id="createGo">Create</button><button class="btn soft" id="createStopBtn" style="display:none">Stop</button></div>
+  <div class="progress thin" id="createBar" hidden><i id="createFill"></i></div>
+  <div class="small" id="createStatus"></div>
+  <div id="createOut"></div>
+  <div class="btn-row" id="createActions" hidden><a class="btn soft" id="createDownload" style="text-decoration:none;color:inherit">Download</a><button class="btn primary" id="createAdd">Add to chat</button></div>
+</div></dialog>
+
+<!-- Developers -->
+<dialog id="dev"><div class="sheet">
+  <button class="icon close" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <h3>For developers</h3>
+  <div class="small">Add free AI to any website. It runs on each visitor's device, so you pay nothing and need no API key.</div>
+  <pre class="snip"><code id="snip"></code></pre>
+  <div class="small" style="margin-top:12px">Open source (MIT), made by Md Taufiqur Rahman. Works in browsers with WebGPU. The first visit downloads the model once; after that it loads from the browser cache. Quality is that of small open-source models.</div>
+</div></dialog>
+
+<input type="file" id="file" accept=".json,application/json" hidden>
+<input type="file" id="imgFile" accept="image/*" hidden>
+<div id="toast" class="glass" role="status"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
